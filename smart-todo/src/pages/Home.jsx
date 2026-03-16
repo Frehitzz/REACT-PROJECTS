@@ -1,4 +1,10 @@
 import { useState } from 'react'
+import { FaEdit } from "react-icons/fa";
+import { FaDeleteLeft } from "react-icons/fa6";
+import { FaCheck } from "react-icons/fa";
+import { RxCross2 } from "react-icons/rx";
+
+
 function Home() {
   // useState - lets you remeber values between renders
 
@@ -12,6 +18,35 @@ function Home() {
 
   const [editIndex, setEditIndex] = useState(null)
   const [editValue, setEditValue] = useState('')
+
+  // 
+  function editTask(index){
+    setEditIndex(index) // to remember which task you want to edit
+    // tasks[index] - gets the tasks at that spot in the list
+    // setEditValue(tasks[index]) - it puts that text into your edit input
+    setEditValue(tasks[index]) 
+  }
+
+  // save edit
+  function saveEdit(){
+    const updatedTasks = [...tasks];
+    updatedTasks[editIndex] = editValue
+    setTasks(updatedTasks)
+    setEditIndex(null)
+    setEditValue('')
+  }
+
+  // cancel edit
+  function cancelEdit(){
+    setEditIndex(null)
+    setEditValue('')
+  }
+
+  
+  function deleteTask(index){
+    const newTasks = tasks.filter((_,i) => i !== index)
+    setTasks(newTasks)
+  }
 
   function addTask() {
     if (input.trim() !== '') {
@@ -43,21 +78,29 @@ function Home() {
           </button>
         </div>
       </div>
+
       {/* TASKS LIST */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {tasks.map((task, index) => (
-          <div className="flex items-center gap-2" key={index}>
-            <div className="p-2 border rounded-2xl w-96">{task}</div>
-            <button className="p-2 border rounded-2xl" onChange={editTask}>
-              Edit
-            </button>
-            <button className="p-2 border rounded-2xl" onChange={deleteTask}>
-              Delete
-            </button>
-          </div>
+        <div className="flex items-center gap-2" key={index}>
+        {editIndex === index ? (
+          <>
+            <input className='w-100 p-2 border rounded-2xl bg-gray-500' value={editValue} onChange={(e) => setEditValue(e.target.value)} />
+            <button className='border p-2 rounded-2xl' onClick={saveEdit}><FaCheck/></button>
+            <button className='border p-2 rounded-2xl' onClick={cancelEdit}><RxCross2/></button>
+          </>
+        ) : (
+          <>
+            <div className='w-100 border p-2 rounded-2xl'>{task}</div>
+            <button className='border p-2 rounded-2xl' onClick={() => editTask(index)}><FaEdit/></button>
+            <button className='border p-2 rounded-2xl' onClick={() => deleteTask(index)}><FaDeleteLeft/></button>
+          </>
+        )}
+      </div>
         ))}
       </div>
-    </div>
+        
+      </div>
   )
 }
-export default Home
+export default Home 
